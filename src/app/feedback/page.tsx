@@ -2,9 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { getCategories } from '../lib/categories';
 
 export default function FeedbackPage() {
   const router = useRouter();
+  const [lang, setLang] = useState<'id' | 'en'>('id');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -17,9 +21,7 @@ export default function FeedbackPage() {
     try {
       const response = await fetch('/api/send-feedback', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, message }),
       });
 
@@ -28,10 +30,7 @@ export default function FeedbackPage() {
         setName('');
         setEmail('');
         setMessage('');
-        
-        setTimeout(() => {
-          router.push('/');
-        }, 2000);
+        setTimeout(() => router.push('/'), 2500);
       } else {
         setStatus('error');
       }
@@ -41,209 +40,173 @@ export default function FeedbackPage() {
     }
   };
 
+  const t = lang === 'id' ? {
+    title: 'Kirim Feedback',
+    subtitle: 'Berikan saran, kritik, atau masukan Anda untuk membantu kami meningkatkan layanan wisata Lombok.',
+    nameLabel: 'Nama Lengkap',
+    namePlaceholder: 'Masukkan nama Anda',
+    emailLabel: 'Email (opsional)',
+    emailPlaceholder: 'email@example.com',
+    msgLabel: 'Pesan / Feedback',
+    msgPlaceholder: 'Tulis saran, kritik, atau feedback Anda di sini...',
+    submit: 'Kirim Feedback',
+    sending: 'Mengirim...',
+    successTitle: 'Terima kasih!',
+    successMsg: 'Feedback Anda telah berhasil terkirim. Anda akan diarahkan ke beranda...',
+    errorMsg: 'Gagal mengirim feedback. Silakan coba lagi.',
+    contactTitle: 'Hubungi Kami',
+    contactDesc: 'Kami selalu mendengarkan masukan dari pengunjung.',
+    ideasTitle: 'Ide & Saran',
+    ideasDesc: 'Punya ide untuk meningkatkan pengalaman wisata? Kami ingin tahu!',
+    privacyTitle: 'Privasi Terjaga',
+    privacyDesc: 'Data Anda aman dan hanya digunakan untuk meningkatkan layanan.',
+  } : {
+    title: 'Send Feedback',
+    subtitle: 'Share your suggestions, reviews, or feedback to help us improve Lombok tourism services.',
+    nameLabel: 'Full Name',
+    namePlaceholder: 'Enter your name',
+    emailLabel: 'Email (optional)',
+    emailPlaceholder: 'email@example.com',
+    msgLabel: 'Message / Feedback',
+    msgPlaceholder: 'Write your suggestions, reviews, or feedback here...',
+    submit: 'Send Feedback',
+    sending: 'Sending...',
+    successTitle: 'Thank you!',
+    successMsg: 'Your feedback has been sent successfully. Redirecting to home...',
+    errorMsg: 'Failed to send feedback. Please try again.',
+    contactTitle: 'Contact Us',
+    contactDesc: 'We always listen to visitor feedback.',
+    ideasTitle: 'Ideas & Suggestions',
+    ideasDesc: 'Have ideas to improve the tourism experience? We want to hear!',
+    privacyTitle: 'Privacy Protected',
+    privacyDesc: 'Your data is safe and only used to improve our services.',
+  };
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px'
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '24px',
-        padding: '40px',
-        maxWidth: '600px',
-        width: '100%',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-      }}>
-        <button
-          onClick={() => router.push('/')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#667eea',
-            fontSize: '14px',
-            cursor: 'pointer',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '5px'
-          }}
-        >
-          ← Kembali ke Beranda
-        </button>
+    <div className="site-wrapper">
+      <Header
+        lang={lang}
+        setLang={setLang}
+        activePage="feedback"
+        topBarItems={getCategories(lang).slice(1).map((cat) => ({
+          key: cat.key,
+          label: cat.label.toUpperCase(),
+          onClick: () => { window.location.href = '/?cat=' + cat.key; },
+        }))}
+      />
 
-        <h1 style={{
-          fontSize: '32px',
-          color: '#333',
-          marginBottom: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          💬 Kirim Feedback
-        </h1>
-        
-        <p style={{
-          color: '#666',
-          marginBottom: '30px',
-          fontSize: '16px'
-        }}>
-          Berikan saran, kritik, atau masukan Anda untuk membantu kami meningkatkan layanan!
-        </p>
+      {/* Hero Banner */}
+      <section className="feedback-hero">
+        <div className="feedback-hero-inner">
+          <h1><i className="fas fa-comment-dots"></i> {t.title}</h1>
+          <p>{t.subtitle}</p>
+        </div>
+      </section>
 
-        {status === 'success' ? (
-          <div style={{
-            background: '#d4edda',
-            border: '1px solid #c3e6cb',
-            borderRadius: '12px',
-            padding: '20px',
-            color: '#155724',
-            textAlign: 'center',
-            fontSize: '16px'
-          }}>
-            ✅ Terima kasih! Feedback Anda telah terkirim.
-            <br />
-            <small>Anda akan diarahkan ke beranda...</small>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: '#333',
-                fontWeight: '500'
-              }}>
-                Nama Anda *
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Masukkan nama Anda"
-                style={{
-                  width: '100%',
-                  color: '#333',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  border: '2px solid #e0e0e0',
-                  fontSize: '16px',
-                  outline: 'none',
-                  transition: 'border 0.3s',
-                }}
-                onFocus={(e) => e.target.style.border = '2px solid #667eea'}
-                onBlur={(e) => e.target.style.border = '2px solid #e0e0e0'}
-              />
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: '#333',
-                fontWeight: '500'
-              }}>
-                Email (opsional)
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@example.com"
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  border: '2px solid #e0e0e0',
-                  fontSize: '16px',
-                  outline: 'none',
-                  transition: 'border 0.3s',
-                }}
-                onFocus={(e) => e.target.style.border = '2px solid #667eea'}
-                onBlur={(e) => e.target.style.border = '2px solid #e0e0e0'}
-              />
-            </div>
-
-            <div style={{ marginBottom: '25px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: '#333',
-                fontWeight: '500'
-              }}>
-                Pesan / Feedback *
-              </label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
-                placeholder="Tulis saran, kritik, atau feedback Anda di sini..."
-                rows={6}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  border: '2px solid #e0e0e0',
-                  fontSize: '16px',
-                  outline: 'none',
-                  resize: 'vertical',
-                  fontFamily: 'inherit',
-                  transition: 'border 0.3s',
-                }}
-                onFocus={(e) => e.target.style.border = '2px solid #667eea'}
-                onBlur={(e) => e.target.style.border = '2px solid #e0e0e0'}
-              />
-            </div>
-
-            {status === 'error' && (
-              <div style={{
-                background: '#f8d7da',
-                border: '1px solid #f5c6cb',
-                borderRadius: '12px',
-                padding: '12px',
-                color: '#721c24',
-                marginBottom: '20px',
-                fontSize: '14px'
-              }}>
-                ❌ Gagal mengirim feedback. Silakan coba lagi.
+      {/* Content */}
+      <main className="feedback-main">
+        <div className="feedback-container">
+          <div className="feedback-card">
+            {status === 'success' ? (
+              <div className="feedback-success">
+                <div className="feedback-success-icon">
+                  <i className="fas fa-check-circle"></i>
+                </div>
+                <h2>{t.successTitle}</h2>
+                <p>{t.successMsg}</p>
               </div>
-            )}
+            ) : (
+              <form onSubmit={handleSubmit} className="feedback-form">
+                <div className="feedback-field">
+                  <label>
+                    {t.nameLabel} <span className="feedback-required">*</span>
+                  </label>
+                  <div className="feedback-input-wrap">
+                    <i className="fas fa-user"></i>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      placeholder={t.namePlaceholder}
+                    />
+                  </div>
+                </div>
 
-            <button
-              type="submit"
-              disabled={status === 'sending'}
-              style={{
-                width: '100%',
-                padding: '14px',
-                background: status === 'sending' ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '18px',
-                fontWeight: '600',
-                cursor: status === 'sending' ? 'not-allowed' : 'pointer',
-                transition: 'transform 0.2s, opacity 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                if (status !== 'sending') {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.opacity = '0.9';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.opacity = '1';
-              }}
-            >
-              {status === 'sending' ? 'Mengirim...' : '📤 Kirim Feedback'}
-            </button>
-          </form>
-        )}
-      </div>
+                <div className="feedback-field">
+                  <label>{t.emailLabel}</label>
+                  <div className="feedback-input-wrap">
+                    <i className="fas fa-envelope"></i>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t.emailPlaceholder}
+                    />
+                  </div>
+                </div>
+
+                <div className="feedback-field">
+                  <label>
+                    {t.msgLabel} <span className="feedback-required">*</span>
+                  </label>
+                  <div className="feedback-input-wrap feedback-textarea-wrap">
+                    <i className="fas fa-pen"></i>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
+                      placeholder={t.msgPlaceholder}
+                      rows={6}
+                    />
+                  </div>
+                </div>
+
+                {status === 'error' && (
+                  <div className="feedback-error">
+                    <i className="fas fa-exclamation-triangle"></i> {t.errorMsg}
+                  </div>
+                )}
+
+                <button type="submit" className="feedback-submit" disabled={status === 'sending'}>
+                  {status === 'sending' ? (
+                    <><i className="fas fa-spinner fa-spin"></i> {t.sending}</>
+                  ) : (
+                    <><i className="fas fa-paper-plane"></i> {t.submit}</>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <aside className="feedback-sidebar">
+            <div className="feedback-sidebar-card">
+              <div className="feedback-sidebar-icon">
+                <i className="fas fa-headset"></i>
+              </div>
+              <h3>{t.contactTitle}</h3>
+              <p>{t.contactDesc}</p>
+            </div>
+            <div className="feedback-sidebar-card">
+              <div className="feedback-sidebar-icon">
+                <i className="fas fa-lightbulb"></i>
+              </div>
+              <h3>{t.ideasTitle}</h3>
+              <p>{t.ideasDesc}</p>
+            </div>
+            <div className="feedback-sidebar-card">
+              <div className="feedback-sidebar-icon">
+                <i className="fas fa-shield-alt"></i>
+              </div>
+              <h3>{t.privacyTitle}</h3>
+              <p>{t.privacyDesc}</p>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      <Footer lang={lang} />
     </div>
   );
 }

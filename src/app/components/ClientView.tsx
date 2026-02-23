@@ -5,6 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { dictionary } from '../dictionary';
 import Carousel from './Carousel';
+import Header from './Header';
+import Footer from './Footer';
+import { getCategories } from '../lib/categories';
 
 // SWRL Rules untuk smart search
 const swrlRules: any = {
@@ -40,6 +43,9 @@ const transportTranslations: any = {
   'PrivateVehicle': { id: 'Kendaraan Pribadi', en: 'Private Vehicle' }
 };
 
+// Reason icons
+const reasonIcons = ['🏝️', '⛰️', '🎭', '🏄', '🌴', '🏘️', '💧', '🍜'];
+
 export default function ClientView({ initialData }: { initialData: any[] }) {
   const [lang, setLang] = useState<'id' | 'en'>('id');
   const [screen, setScreen] = useState<'welcome' | 'search'>('welcome');
@@ -60,27 +66,6 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
     '/05.png'
   ];
 
-  // Particles
-  useEffect(() => {
-    const container = document.getElementById('particles');
-    if (container && container.innerHTML === '') {
-      for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        const size = Math.random() * 8 + 2;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.setProperty('--tx', `${Math.random() * 100 - 50}px`);
-        particle.style.setProperty('--ty', `${Math.random() * 100 - 50}px`);
-        particle.style.setProperty('--r', `${Math.random() * 360}deg`);
-        particle.style.animation = `float ${Math.random() * 10 + 10}s ease-in-out infinite alternate`;
-        container.appendChild(particle);
-      }
-    }
-  }, []);
-
   // ESC key to close modal
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -89,6 +74,23 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);
   }, []);
+
+  // Helper: get image url
+  const getImageUrl = (item: any) => {
+    return item.img && item.img.startsWith('http') ? item.img : 'https://placehold.co/400x300/B8860B/white?text=Lombok';
+  };
+
+  // Featured items for welcome page
+  const featuredItems = useMemo(() => {
+    return initialData
+      .filter(item => item.img && item.img.startsWith('http'))
+      .slice(0, 7);
+  }, [initialData]);
+
+  // Video item for hero
+  const videoItem = useMemo(() => {
+    return initialData.find(item => item.video && item.video.includes('youtube'));
+  }, [initialData]);
 
   // Helper functions
   const translateTransport = (transport: string) => {
@@ -135,7 +137,6 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
   const filteredData = useMemo(() => {
     let filtered = initialData;
 
-    // Active rules dari keyword
     let activeRules: any[] = [];
     for (const [ruleName, rule] of Object.entries(swrlRules)) {
       const ruleObj = rule as { keywords: string[]; badge: string; badgeId: string; filter: (item: any, lang: string) => boolean };
@@ -157,17 +158,13 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
         location: lang === 'id' ? item.locationId : item.locationEn,
       };
 
-      // Category filter
       let passCategory = activeCategories.includes('all') ? true :
         activeCategories.some(cat => item.typeURI.includes(cat));
 
-      // Location filter
       let passLocation = (locFilter === 'all') ? true : (item.locationURI || '').includes(locFilter);
 
-      // Transport filter
       let passTransport = (transFilter === 'all') ? true : item.transport.toLowerCase().includes(transFilter.toLowerCase());
 
-      // Keyword filter
       let passKeyword = true;
       if (!isSmartSearchActive && keyword !== "") {
         passKeyword = itemData.title.toLowerCase().includes(keyword.toLowerCase()) ||
@@ -176,7 +173,6 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
           itemData.desc.toLowerCase().includes(keyword.toLowerCase());
       }
 
-      // Smart rule filter
       let passSmartRule = true;
       if (isSmartSearchActive) {
         passSmartRule = false;
@@ -241,266 +237,399 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
 
   const handleEnter = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      // Trigger search - nothing to do, filtering is automatic
+      // Filtering is automatic
     }
   };
 
+  // Category definitions for top bar and pills
+  const categories = getCategories(lang);
+
   return (
-    <>
-      <div id="particles"></div>
+    <div className="site-wrapper">
+      <Header
+        lang={lang}
+        setLang={setLang}
+        activePage={screen === 'welcome' ? 'home' : 'destinations'}
+        onNavigate={setScreen}
+        topBarItems={categories.slice(1).map((cat) => ({
+          key: cat.key,
+          label: cat.label.toUpperCase(),
+          active: activeCategories.includes(cat.key),
+          onClick: () => { setCategory(cat.key); setScreen('search'); },
+        }))}
+      />
 
-      <div className="language-switcher">
-        <button className={`lang-btn ${lang === 'id' ? 'active' : ''}`} onClick={() => setLang('id')}>
-          🇮🇩 ID
-        </button>
-        <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>
-          🇬🇧 EN
-        </button>
-      </div>
-
-      <Link 
-        href="/feedback"
-        style={{
-          position: 'fixed',
-          bottom: '30px',
-          right: '30px',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          padding: '14px 24px',
-          borderRadius: '50px',
-          textDecoration: 'none',
-          fontSize: '16px',
-          fontWeight: '600',
-          boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          transition: 'all 0.3s ease',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.boxShadow = '0 12px 32px rgba(102, 126, 234, 0.5)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 8px 24px rgba(102, 126, 234, 0.4)';
-        }}
-      >
-        💬 Feedback
-      </Link>
-
-      <div className="container">
-        {/* Welcome Screen */}
-        <div id="welcomeScreen" className={`screen ${screen === 'welcome' ? 'active' : ''}`}>
-          <h1 dangerouslySetInnerHTML={{ __html: t.welcome.replace("Lombok Paradise", "<span class='highlight'>Lombok Paradise</span>") }}></h1>
-          <p>{t.subtitle}</p>
-
-          <Carousel images={carouselImages} />
-
-          <div className="lombok-info">
-            <h3>{t.why}</h3>
-            <ul>
-              {t.reasons.map((reason: string, index: number) => (
-                <li key={index}>{reason}</li>
-              ))}
-            </ul>
-          </div>
-
-          <button className="btn btn-primary" onClick={() => setScreen('search')}>
-            <i className="fas fa-play-circle"></i> {t.startBtn}
-          </button>
-        </div>
-
-        {/* Search Screen */}
-        <div id="searchScreen" className={`screen ${screen === 'search' ? 'active' : ''}`}>
-          <div className="search-header">
-            <h2><i className="fas fa-search"></i> {t.explore}</h2>
-          </div>
-
-          <div className="search-box">
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              onKeyUp={handleEnter}
-              placeholder={t.searchPlace}
-            />
-            <button onClick={() => { }}>
-              <i className="fas fa-search"></i> Cari
-            </button>
-          </div>
-
-          <div className="filter-section">
-            <div className="filter-group">
-              <label><i className="fas fa-map-marker-alt"></i> {t.locLabel}</label>
-              <select value={locFilter} onChange={(e) => setLocFilter(e.target.value)}>
-                <option value="all">{t.allLoc}</option>
-                <option value="Central_Lombok">{t.centralLombok}</option>
-                <option value="EastLombok">{t.eastLombok}</option>
-                <option value="NorthLombok">{t.northLombok}</option>
-                <option value="WestLombok">{t.westLombok}</option>
-                <option value="MataramCity">{t.mataramCity}</option>
-              </select>
-            </div>
-            <div className="filter-group">
-              <label><i className="fas fa-bus"></i> {t.transLabel}</label>
-              <select value={transFilter} onChange={(e) => setTransFilter(e.target.value)}>
-                <option value="all">{t.allTrans}</option>
-                <option value="Car">{t.car}</option>
-                <option value="motorcyle">{t.motorcycle}</option>
-                <option value="bus">{t.bus}</option>
-                <option value="taxi">{t.taxi}</option>
-                <option value="boat">{t.boat}</option>
-                <option value="ferry">{t.ferry}</option>
-                <option value="speedboat">{t.speedboat}</option>
-                <option value="plane">{t.plane}</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="category-filter">
-            <div className={`category-btn ${activeCategories.includes('all') ? 'active' : ''}`} onClick={() => setCategory('all')}>
-              <i className="fas fa-globe"></i> {t.catAll}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('MarineTourism') ? 'active' : ''}`} onClick={() => setCategory('MarineTourism')}>
-              <i className="fas fa-umbrella-beach"></i> {t.catBeach}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('MountainTourism') ? 'active' : ''}`} onClick={() => setCategory('MountainTourism')}>
-              <i className="fas fa-mountain"></i> {t.catMountain}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('CulturalandReligiousTourism') ? 'active' : ''}`} onClick={() => setCategory('CulturalandReligiousTourism')}>
-              <i className="fas fa-landmark"></i> {t.catCulture}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('WaterfallTourism') ? 'active' : ''}`} onClick={() => setCategory('WaterfallTourism')}>
-              <i className="fas fa-water"></i> {t.catWaterfall}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('IslandTourism') ? 'active' : ''}`} onClick={() => setCategory('IslandTourism')}>
-              <i className="fas fa-tree"></i> {t.catIsland}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('CaveTourism') ? 'active' : ''}`} onClick={() => setCategory('CaveTourism')}>
-              <i className="fas fa-dungeon"></i> {t.catCave}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('Agrotourism') ? 'active' : ''}`} onClick={() => setCategory('Agrotourism')}>
-              <i className="fas fa-seedling"></i> {t.catAgro}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('CulinaryTourism') ? 'active' : ''}`} onClick={() => setCategory('CulinaryTourism')}>
-              <i className="fas fa-utensils"></i> {t.catCulinary}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('BathingTourism') ? 'active' : ''}`} onClick={() => setCategory('BathingTourism')}>
-              <i className="fas fa-swimming-pool"></i> {t.catBathing}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('ShoppingTour') ? 'active' : ''}`} onClick={() => setCategory('ShoppingTour')}>
-              <i className="fas fa-shopping-bag"></i> {t.catShopping}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('TouristPark') ? 'active' : ''}`} onClick={() => setCategory('TouristPark')}>
-              <i className="fas fa-tree"></i> {t.catPark}
-            </div>
-            <div className={`category-btn ${activeCategories.includes('Events') ? 'active' : ''}`} onClick={() => setCategory('Events')}>
-              <i className="fas fa-calendar-alt"></i> {t.catEvents}
-            </div>
-          </div>
-
-          <button className="btn btn-secondary" onClick={() => setScreen('welcome')}>
-            <i className="fas fa-arrow-left"></i> {t.backWelcome}
-          </button>
-
-          <div id="results">
-            {filteredData.filtered.length === 0 ? (
-              <div className='result' style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px' }}>
-                <h3>{t.noResult}</h3>
+      {/* ===== Main Content ===== */}
+      <main>
+        {screen === 'welcome' ? (
+          <>
+            {/* ===== Hero Section ===== */}
+            <section className="hero-section">
+              <div className="hero-bg">
+                <Carousel images={carouselImages} />
               </div>
-            ) : (
-              filteredData.filtered.map((item, index) => {
-                const itemData = {
-                  title: lang === 'id' ? item.nameId : item.nameEn,
-                  typeLabel: lang === 'id' ? item.typeLabelId : item.typeLabelEn,
-                  desc: lang === 'id' ? item.descId : item.descEn,
-                  price: lang === 'id' ? item.priceId : item.priceEn,
-                  location: lang === 'id' ? item.locationId : item.locationEn,
-                };
+              <div className="hero-overlay">
+                <div className="hero-left">
+                  <p className="hero-label">
+                    {lang === 'id' ? 'Selamat datang di Laman Resmi' : 'Welcome to the Official Page'}
+                  </p>
+                  <h1 className="hero-title">
+                    <span className="hero-title-line">
+                      <span className="hero-title-highlight">Lombok</span>
+                    </span>
+                    <span className="hero-title-line">
+                      <span className="hero-title-highlight">Paradise</span>
+                    </span>
+                  </h1>
+                  <div className="hero-actions">
+                    <button className="hero-btn" onClick={() => setScreen('search')}>
+                      <i className="fas fa-compass"></i> {t.startBtn.toUpperCase()}
+                    </button>
+                    {videoItem && (
+                      <button className="hero-btn hero-btn-outline" onClick={() => setModalItem(videoItem)}>
+                        <i className="fab fa-youtube"></i> {lang === 'id' ? 'VIDEO WISATA' : 'TOURISM VIDEO'}
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-                let imageUrl = item.img && item.img.startsWith('http') ? item.img : 'https://placehold.co/300x200/4a63e7/white?text=No+Image';
-                
-                let smartBadge = "";
-                let smartClass = "";
-                if (filteredData.activeRules.length > 0) {
-                  smartClass = "smart-result";
-                  const badge = lang === 'id' ? filteredData.activeRules[0].badgeId : filteredData.activeRules[0].badge;
-                  smartBadge = badge;
-                }
-
-                let ratingHtml = '';
-                if (item.rating) {
-                  const starCount = Math.round(parseFloat(item.rating));
-                  for (let i = 0; i < 5; i++) {
-                    ratingHtml += `<i class="fas fa-star" style="color: ${i < starCount ? '#ffd700' : '#ddd'}; font-size: 0.85rem;"></i>`;
-                  }
-                }
-
-                return (
-                  <div key={index} className={`result ${smartClass}`}>
-                    {smartBadge && <div className="smart-badge">{smartBadge}</div>}
-                    <h3>{itemData.title}</h3>
-                    <div style={{ position: 'relative', height: '180px', overflow: 'hidden', borderRadius: '12px', marginBottom: '15px' }}>
+                <div className="hero-right">
+                  {/* Video Card */}
+                  <div
+                    className="hero-card hero-video-card"
+                    onClick={() => videoItem && setModalItem(videoItem)}
+                  >
+                    <div className="hero-card-img">
                       <Image
-                        src={imageUrl}
-                        alt={itemData.title}
+                        src="/01.png"
+                        alt="Lombok Video"
                         fill
                         style={{ objectFit: 'cover' }}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        onError={(e) => e.currentTarget.src = 'https://placehold.co/300x200/4a63e7/white?text=No+Image'}
+                        sizes="300px"
                       />
-                    </div>
-                    {item.video && extractVideoId(item.video) && (
-                      <div style={{ width: '100%', marginTop: '10px', marginBottom: '15px' }}>
-                        <div className="video-container">
-                          <iframe
-                            src={`https://www.youtube.com/embed/${extractVideoId(item.video)}`}
-                            title="YouTube video player"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowFullScreen
-                            style={{ border: 'none' }}
-                          />
-                        </div>
+                      <div className="hero-card-play">
+                        <i className="fas fa-play-circle"></i>
                       </div>
-                    )}
-                    <span className="tag">{itemData.typeLabel}</span>
-                    <div className="info-row">
-                      <i className="fas fa-map-marker-alt" style={{ color: '#e91e63' }}></i>
-                      <span>{itemData.location || 'Lombok'}</span>
                     </div>
-                    <div className="info-row">
-                      <i className="fas fa-tag" style={{ color: '#4caf50' }}></i>
-                      <span>{formatPrice(itemData.price)}</span>
-                    </div>
-                    {ratingHtml && (
-                      <div className="info-row">
-                        <i className="fas fa-star" style={{ color: '#ffd700' }}></i>
-                        <span dangerouslySetInnerHTML={{ __html: `${ratingHtml} (${item.rating})` }}></span>
-                      </div>
-                    )}
-                    <p style={{ marginTop: '15px', fontSize: '0.9rem', color: '#666', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {itemData.desc || t.noDesc}
-                    </p>
-                    <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                      <button
-                        className="btn btn-secondary"
-                        style={{ flex: 1, padding: '10px 15px', fontSize: '14px', color: '#333', borderColor: '#ccc' }}
-                        onClick={() => setModalItem(item)}
-                      >
-                        <i className="fas fa-info-circle"></i> {t.moreDetails}
-                      </button>
+                    <div className="hero-card-label">
+                      <span>{lang === 'id' ? 'Video Resmi' : 'Official Video'}</span>
+                      <i className="fas fa-arrow-right"></i>
                     </div>
                   </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
 
-      {/* Modal */}
+                  {/* Info Card */}
+                  {featuredItems[0] && (
+                    <div
+                      className="hero-card hero-info-card"
+                      onClick={() => setModalItem(featuredItems[0])}
+                    >
+                      <p className="hero-card-text">
+                        {lang === 'id' ? featuredItems[0].nameId : featuredItems[0].nameEn}
+                      </p>
+                      <i className="fas fa-arrow-right"></i>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* ===== Featured Destinations ===== */}
+            {featuredItems.length >= 3 && (
+              <section className="featured-section">
+                <div className="section-inner">
+                  <div className="featured-grid">
+                    {/* Main Featured Card */}
+                    <div className="featured-main" onClick={() => setModalItem(featuredItems[0])}>
+                      <Image
+                        src={getImageUrl(featuredItems[0])}
+                        alt={lang === 'id' ? featuredItems[0].nameId : featuredItems[0].nameEn}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      <div className="featured-overlay">
+                        <span className="featured-badge">
+                          <span className="badge-dot"></span>
+                          {lang === 'id' ? 'Destinasi Unggulan' : 'Featured Destination'}
+                        </span>
+                        <h3>{lang === 'id' ? featuredItems[0].nameId : featuredItems[0].nameEn}</h3>
+                        <span className="featured-type">
+                          {lang === 'id' ? featuredItems[0].typeLabelId : featuredItems[0].typeLabelEn}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Secondary Cards */}
+                    {featuredItems.slice(1, 3).map((item: any, i: number) => (
+                      <div key={i} className="featured-secondary" onClick={() => setModalItem(item)}>
+                        <div className="featured-sec-img">
+                          <Image
+                            src={getImageUrl(item)}
+                            alt={lang === 'id' ? item.nameId : item.nameEn}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        </div>
+                        <div className="featured-sec-body">
+                          <span className="featured-sec-type">
+                            {lang === 'id' ? item.typeLabelId : item.typeLabelEn}
+                          </span>
+                          <h4>{lang === 'id' ? item.nameId : item.nameEn}</h4>
+                        </div>
+                      </div>
+                    ))}
+
+                    {featuredItems.slice(3, 5).map((item: any, i: number) => (
+                      <div key={i + 2} className="featured-secondary" onClick={() => setModalItem(item)}>
+                        <div className="featured-sec-img">
+                          <Image
+                            src={getImageUrl(item)}
+                            alt={lang === 'id' ? item.nameId : item.nameEn}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        </div>
+                        <div className="featured-sec-body">
+                          <span className="featured-sec-type">
+                            {lang === 'id' ? item.typeLabelId : item.typeLabelEn}
+                          </span>
+                          <h4>{lang === 'id' ? item.nameId : item.nameEn}</h4>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* ===== More Destinations Row ===== */}
+            {featuredItems.length >= 5 && (
+              <section className="more-section">
+                <div className="section-inner">
+                  <div className="more-grid">
+                    {featuredItems.slice(3, 7).map((item: any, i: number) => (
+                      <div key={i} className="more-card" onClick={() => setModalItem(item)}>
+                        <div className="more-card-img">
+                          <Image
+                            src={getImageUrl(item)}
+                            alt={lang === 'id' ? item.nameId : item.nameEn}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="(max-width: 768px) 50vw, 20vw"
+                          />
+                        </div>
+                        <h5>{lang === 'id' ? item.nameId : item.nameEn}</h5>
+                        <span className="more-card-type">
+                          {lang === 'id' ? item.typeLabelId : item.typeLabelEn}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="more-see-all" onClick={() => setScreen('search')}>
+                      <i className="fas fa-compass"></i>
+                      <strong>{lang === 'id' ? 'Lihat Destinasi Lainnya' : 'See More Destinations'}</strong>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* ===== Why Lombok Section ===== */}
+            <section className="info-section">
+              <div className="section-inner">
+                <h2>{t.why}</h2>
+                <div className="info-grid">
+                  {t.reasons.map((reason: string, i: number) => (
+                    <div key={i} className="info-item">
+                      <span className="info-icon">{reasonIcons[i] || '🌟'}</span>
+                      <span>{reason}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
+          /* ===== Search / Destinations Screen ===== */
+          <section className="search-section">
+            <div className="section-inner">
+              {/* Header */}
+              <div className="search-page-header">
+                <h2><i className="fas fa-compass"></i> {t.explore}</h2>
+                <button className="btn-back" onClick={() => setScreen('welcome')}>
+                  <i className="fas fa-arrow-left"></i> {t.backWelcome}
+                </button>
+              </div>
+
+              {/* Search Bar */}
+              <div className="search-bar">
+                <div className="search-input-wrap">
+                  <i className="fas fa-search"></i>
+                  <input
+                    type="text"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    onKeyUp={handleEnter}
+                    placeholder={t.searchPlace}
+                  />
+                </div>
+              </div>
+
+              {/* SWRL Rules Indicator */}
+              {filteredData.activeRules.length > 0 && (
+                <div className="swrl-indicator">
+                  <i className="fas fa-brain"></i>
+                  <span>{t.swrlTitle}</span>
+                  <div className="swrl-badges">
+                    {filteredData.activeRules.map((rule: any, i: number) => (
+                      <span key={i} className="swrl-badge">
+                        {lang === 'id' ? rule.badgeId : rule.badge}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Filters */}
+              <div className="filters-bar">
+                <div className="filter-item">
+                  <label><i className="fas fa-map-marker-alt"></i> {t.locLabel}</label>
+                  <select value={locFilter} onChange={(e) => setLocFilter(e.target.value)}>
+                    <option value="all">{t.allLoc}</option>
+                    <option value="Central_Lombok">{t.centralLombok}</option>
+                    <option value="EastLombok">{t.eastLombok}</option>
+                    <option value="NorthLombok">{t.northLombok}</option>
+                    <option value="WestLombok">{t.westLombok}</option>
+                    <option value="MataramCity">{t.mataramCity}</option>
+                  </select>
+                </div>
+                <div className="filter-item">
+                  <label><i className="fas fa-bus"></i> {t.transLabel}</label>
+                  <select value={transFilter} onChange={(e) => setTransFilter(e.target.value)}>
+                    <option value="all">{t.allTrans}</option>
+                    <option value="Car">{t.car}</option>
+                    <option value="motorcyle">{t.motorcycle}</option>
+                    <option value="bus">{t.bus}</option>
+                    <option value="taxi">{t.taxi}</option>
+                    <option value="boat">{t.boat}</option>
+                    <option value="ferry">{t.ferry}</option>
+                    <option value="speedboat">{t.speedboat}</option>
+                    <option value="plane">{t.plane}</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Category Pills */}
+              <div className="category-pills">
+                {categories.map((cat) => (
+                  <div
+                    key={cat.key}
+                    className={`cat-pill ${activeCategories.includes(cat.key) ? 'active' : ''}`}
+                    onClick={() => setCategory(cat.key)}
+                  >
+                    <i className={cat.icon}></i> {cat.label}
+                  </div>
+                ))}
+              </div>
+
+              {/* Results Header */}
+              <div className="results-header">
+                <span>
+                  {filteredData.filtered.length} {lang === 'id' ? 'destinasi ditemukan' : 'destinations found'}
+                </span>
+              </div>
+
+              {/* Results Grid */}
+              <div className="results-grid">
+                {filteredData.filtered.length === 0 ? (
+                  <div className="no-results">
+                    <i className="fas fa-map-marked-alt"></i>
+                    <h3>{t.noResult}</h3>
+                  </div>
+                ) : (
+                  filteredData.filtered.map((item: any, index: number) => {
+                    const itemData = {
+                      title: lang === 'id' ? item.nameId : item.nameEn,
+                      typeLabel: lang === 'id' ? item.typeLabelId : item.typeLabelEn,
+                      desc: lang === 'id' ? item.descId : item.descEn,
+                      price: lang === 'id' ? item.priceId : item.priceEn,
+                      location: lang === 'id' ? item.locationId : item.locationEn,
+                    };
+
+                    const imageUrl = getImageUrl(item);
+
+                    let smartBadge = "";
+                    let smartClass = "";
+                    if (filteredData.activeRules.length > 0) {
+                      smartClass = "smart-active";
+                      smartBadge = lang === 'id' ? filteredData.activeRules[0].badgeId : filteredData.activeRules[0].badge;
+                    }
+
+                    let ratingHtml = '';
+                    if (item.rating) {
+                      const starCount = Math.round(parseFloat(item.rating));
+                      for (let i = 0; i < 5; i++) {
+                        ratingHtml += `<i class="fas fa-star" style="color: ${i < starCount ? '#ffd700' : '#ddd'}; font-size: 0.8rem;"></i>`;
+                      }
+                    }
+
+                    return (
+                      <div key={index} className={`dest-card ${smartClass}`}>
+                        <div className="dest-card-img">
+                          <Image
+                            src={imageUrl}
+                            alt={itemData.title}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            onError={(e) => e.currentTarget.src = 'https://placehold.co/400x300/B8860B/white?text=Lombok'}
+                          />
+                          {smartBadge && (
+                            <div className="dest-card-smart-badge">{smartBadge}</div>
+                          )}
+                        </div>
+
+                        <div className="dest-card-body">
+                          <span className="dest-card-tag">{itemData.typeLabel}</span>
+                          <h3>{itemData.title}</h3>
+
+                          <div className="dest-card-info">
+                            <i className="fas fa-map-marker-alt"></i>
+                            <span>{itemData.location || 'Lombok'}</span>
+                          </div>
+                          <div className="dest-card-info">
+                            <i className="fas fa-tag"></i>
+                            <span>{formatPrice(itemData.price)}</span>
+                          </div>
+                          {ratingHtml && (
+                            <div className="dest-card-info">
+                              <i className="fas fa-star"></i>
+                              <span dangerouslySetInnerHTML={{ __html: `${ratingHtml} (${item.rating})` }}></span>
+                            </div>
+                          )}
+
+                          <p className="dest-card-desc">{itemData.desc || t.noDesc}</p>
+
+                          <div className="dest-card-action">
+                            <button className="dest-card-btn" onClick={() => setModalItem(item)}>
+                              <i className="fas fa-info-circle"></i> {t.moreDetails}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+
+      <Footer lang={lang} onNavigate={setScreen} />
+
+      {/* ===== Modal ===== */}
       {modalItem && (
         <div className="modal-overlay active" onClick={(e) => {
           if (e.target === e.currentTarget) setModalItem(null);
@@ -509,9 +638,9 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
             <div className="modal-header">
               <img
                 className="modal-image"
-                src={modalItem.img && modalItem.img.startsWith('http') ? modalItem.img : 'https://placehold.co/700x400/4a63e7/white?text=No+Image'}
+                src={modalItem.img && modalItem.img.startsWith('http') ? modalItem.img : 'https://placehold.co/700x400/B8860B/white?text=Lombok'}
                 alt="Destination"
-                onError={(e) => e.currentTarget.src = 'https://placehold.co/700x400/4a63e7/white?text=No+Image'}
+                onError={(e) => e.currentTarget.src = 'https://placehold.co/700x400/B8860B/white?text=Lombok'}
               />
               <button className="modal-close" onClick={() => setModalItem(null)}>
                 <i className="fas fa-times"></i>
@@ -601,6 +730,6 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
