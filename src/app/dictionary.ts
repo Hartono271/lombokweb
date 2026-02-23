@@ -1,8 +1,8 @@
-export const dictionary = {
+export const dictionary: Record<'id' | 'en', any> = {
   id: {
-    welcome: "🏝️ Selamat Datang di Lombok Paradise",
+    welcome: "Selamat Datang di Lombok Paradise",
     subtitle: "Temukan permata tersembunyi Indonesia! Lombok menawarkan pantai-pantai yang menakjubkan, pegunungan yang megah, budaya yang semarak, dan petualangan tak terlupakan yang menanti Anda.",
-    why: "🌴 Kenapa Lombok?",
+    why: "Kenapa Lombok?",
     reasons: ["Pantai-pantai yang masih alami dengan air sebening kristal", "Gunung Rinjani - gunung berapi tertinggi kedua di Indonesia", "Budaya & tradisi Sasak yang otentik", "Tempat berselancar & menyelam kelas dunia", "Surga Kepulauan Gili yang indah", "Desa-desa tradisional Sasak", "Air terjun & hutan eksotis", "Masakan lokal yang lezat"],
     startBtn: "Mulai Jelajah",
     backWelcome: "Kembali",
@@ -39,12 +39,44 @@ export const dictionary = {
     noHours: "Buka setiap hari",
     free: "Gratis",
     watchVideo: "Tonton Video",
-    eventTime: "Waktu Event"
+    eventTime: "Waktu Event",
+    tourismInfoTitle: "Pariwisata Lombok dalam Angka",
+    tourismStats: [
+      { icon: "fas fa-umbrella-beach", value: "300+", label: "Destinasi Wisata" },
+      { icon: "fas fa-globe-asia", value: "3,7 Juta", label: "Pengunjung per Tahun" },
+      { icon: "fas fa-map", value: "5", label: "Kabupaten/Kota" },
+      { icon: "fas fa-th-large", value: "12+", label: "Kategori Wisata" }
+    ],
+    targetTitle: "Untuk Siapa Wisata Lombok?",
+    targets: [
+      { icon: "fas fa-users", title: "Keluarga", desc: "Taman wisata, pantai aman, dan pemandian alami yang sempurna untuk liburan keluarga yang berkesan." },
+      { icon: "fas fa-hiking", title: "Petualang", desc: "Mendaki Rinjani, diving di Gili, jelajahi gua — Lombok adalah surga bagi pencari adrenalin." },
+      { icon: "fas fa-camera", title: "Konten Kreator", desc: "Sunset menakjubkan, pantai eksotis, dan budaya Sasak yang unik memberikan konten tanpa batas." },
+      { icon: "fas fa-book-open", title: "Peneliti & Mahasiswa", desc: "Wisata edukasi, desa adat, agrowisata, dan kearifan lokal untuk penelitian dan pembelajaran." },
+      { icon: "fas fa-spa", title: "Pencari Ketenangan", desc: "Pemandian air panas, pulau terpencil, dan alam yang masih asri untuk pengalaman healing sempurna." },
+      { icon: "fas fa-utensils", title: "Pecinta Kuliner", desc: "Ayam Taliwang, Plecing Kangkung, Sate Rembiga — cita rasa otentik Lombok yang memanjakan lidah." }
+    ],
+    problemTitle: "Masalah yang Kami Pecahkan",
+    problemSubtitle: "Wisatawan sering kesulitan menemukan destinasi yang sesuai preferensi mereka. Kami hadir dengan solusi berbasis teknologi web semantik.",
+    problems: [
+      { icon: "fas fa-puzzle-piece", title: "Informasi Tersebar", desc: "Data wisata Lombok tersebar di banyak situs. Kami mengumpulkan semuanya dalam satu platform cerdas.", solution: "Satu platform terintegrasi" },
+      { icon: "fas fa-search", title: "Hasil Pencarian Tidak Relevan", desc: "Mesin pencari biasa tidak memahami konteks wisata. Kami menggunakan 16 aturan SWRL untuk pencarian cerdas.", solution: "16 SWRL Rules AI" },
+      { icon: "fas fa-language", title: "Kendala Bahasa", desc: "Wisatawan asing kesulitan dengan konten berbahasa Indonesia saja. Kami menyediakan dukungan dwibahasa otomatis.", solution: "Dwibahasa ID/EN" },
+      { icon: "fas fa-filter", title: "Terlalu Banyak Pilihan", desc: "Dengan 300+ destinasi, memilih yang tepat sangat membingungkan. Filter cerdas kami membantu Anda memutuskan.", solution: "Filter lokasi, kategori & transportasi" }
+    ],
+    impactTitle: "Dampak bagi Masyarakat",
+    impactSubtitle: "Platform ini bukan hanya untuk wisatawan — tetapi memberikan manfaat nyata bagi masyarakat Lombok.",
+    impacts: [
+      { icon: "fas fa-chart-line", title: "Pertumbuhan Ekonomi Lokal", desc: "Mendorong kunjungan ke destinasi tersembunyi sehingga pendapatan terdistribusi merata ke seluruh wilayah Lombok, bukan hanya kawasan wisata utama." },
+      { icon: "fas fa-home", title: "Pemberdayaan Desa", desc: "Desa wisata tradisional dan lokal mendapat eksposur lebih luas, membuka peluang usaha bagi warga setempat." },
+      { icon: "fas fa-graduation-cap", title: "Literasi Digital Pariwisata", desc: "Memperkenalkan teknologi web semantik dalam pariwisata, mendorong inovasi digital di sektor pariwisata NTB." },
+      { icon: "fas fa-leaf", title: "Pariwisata Berkelanjutan", desc: "Dengan mendistribusikan wisatawan ke berbagai destinasi, mengurangi overtourism dan menjaga kelestarian alam Lombok." }
+    ]
   },
   en: {
-    welcome: "🏝️ Welcome to Lombok Paradise",
+    welcome: "Welcome to Lombok Paradise",
     subtitle: "Discover the hidden gem of Indonesia! Lombok offers breathtaking beaches, majestic mountains, vibrant culture, and unforgettable adventures waiting for you.",
-    why: "🌴 Why Visit Lombok?",
+    why: "Why Visit Lombok?",
     reasons: ["Pristine beaches with crystal clear waters", "Mount Rinjani - Indonesia's second highest volcano", "Authentic Sasak culture & traditions", "World-class surfing & diving spots", "Beautiful Gili Islands paradise", "Traditional Sasak villages", "Exotic waterfalls & jungles", "Delicious local cuisine"],
     startBtn: "Start Exploring",
     backWelcome: "Back",
@@ -81,6 +113,38 @@ export const dictionary = {
     noHours: "Open daily",
     free: "Free",
     watchVideo: "Watch Video",
-    eventTime: "Event Time"
+    eventTime: "Event Time",
+    tourismInfoTitle: "Lombok Tourism in Numbers",
+    tourismStats: [
+      { icon: "fas fa-umbrella-beach", value: "300+", label: "Tourist Destinations" },
+      { icon: "fas fa-globe-asia", value: "3.7 Million", label: "Visitors per Year" },
+      { icon: "fas fa-map", value: "5", label: "Regencies/Cities" },
+      { icon: "fas fa-th-large", value: "12+", label: "Tourism Categories" }
+    ],
+    targetTitle: "Who Is Lombok Tourism For?",
+    targets: [
+      { icon: "fas fa-users", title: "Families", desc: "Family parks, safe beaches, and natural pools perfect for a memorable family getaway." },
+      { icon: "fas fa-hiking", title: "Adventurers", desc: "Climb Rinjani, dive in Gili, explore caves — Lombok is a paradise for adrenaline seekers." },
+      { icon: "fas fa-camera", title: "Content Creators", desc: "Stunning sunsets, exotic beaches, and unique Sasak culture provide endless content possibilities." },
+      { icon: "fas fa-book-open", title: "Researchers & Students", desc: "Educational tourism, traditional villages, agrotourism, and local wisdom for research and learning." },
+      { icon: "fas fa-spa", title: "Relaxation Seekers", desc: "Hot springs, secluded islands, and pristine nature for the perfect healing experience." },
+      { icon: "fas fa-utensils", title: "Food Lovers", desc: "Ayam Taliwang, Plecing Kangkung, Sate Rembiga — authentic Lombok flavors that delight the palate." }
+    ],
+    problemTitle: "The Problem We Solve",
+    problemSubtitle: "Tourists often struggle to find destinations that match their preferences. We provide a solution powered by semantic web technology.",
+    problems: [
+      { icon: "fas fa-puzzle-piece", title: "Scattered Information", desc: "Lombok tourism data is spread across many sites. We aggregate everything into one smart platform.", solution: "One integrated platform" },
+      { icon: "fas fa-search", title: "Irrelevant Search Results", desc: "Regular search engines don't understand tourism context. We use 16 SWRL rules for intelligent search.", solution: "16 SWRL Rules AI" },
+      { icon: "fas fa-language", title: "Language Barriers", desc: "Foreign tourists struggle with Indonesian-only content. We provide automatic bilingual support.", solution: "Bilingual ID/EN" },
+      { icon: "fas fa-filter", title: "Choice Overload", desc: "With 300+ destinations, choosing the right one is overwhelming. Our smart filters help you decide.", solution: "Location, category & transport filters" }
+    ],
+    impactTitle: "Impact on Community",
+    impactSubtitle: "This platform isn't just for tourists — it brings real benefits to the people of Lombok.",
+    impacts: [
+      { icon: "fas fa-chart-line", title: "Local Economic Growth", desc: "Driving visits to hidden destinations so income is distributed evenly across all regions of Lombok, not just main tourist areas." },
+      { icon: "fas fa-home", title: "Village Empowerment", desc: "Traditional and local tourism villages gain wider exposure, opening business opportunities for residents." },
+      { icon: "fas fa-graduation-cap", title: "Digital Tourism Literacy", desc: "Introducing semantic web technology in tourism, encouraging digital innovation in NTB's tourism sector." },
+      { icon: "fas fa-leaf", title: "Sustainable Tourism", desc: "By distributing tourists across various destinations, reducing overtourism and preserving Lombok's natural beauty." }
+    ]
   }
 };

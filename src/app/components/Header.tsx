@@ -53,7 +53,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
         <div className="header-inner">
           {onNavigate ? (
             <div className="header-logo" onClick={() => { onNavigate('welcome'); closeMobile(); }}>
-              <span className="logo-icon">🏝️</span>
+              <span className="logo-icon"><i className="fas fa-umbrella-beach"></i></span>
               <div className="logo-text">
                 <span className="logo-main">Lombok</span>
                 <span className="logo-sub">Tourism</span>
@@ -61,7 +61,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
             </div>
           ) : (
             <Link href="/" className="header-logo" onClick={closeMobile}>
-              <span className="logo-icon">🏝️</span>
+              <span className="logo-icon"><i className="fas fa-umbrella-beach"></i></span>
               <div className="logo-text">
                 <span className="logo-main">Lombok</span>
                 <span className="logo-sub">Tourism</span>
@@ -108,7 +108,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
               </button>
             )}
             <button className="lang-toggle" onClick={() => setLang(lang === 'id' ? 'en' : 'id')}>
-              {lang === 'id' ? '🇬🇧 IN ENGLISH' : '🇮🇩 INDONESIA'}
+              {lang === 'id' ? 'IN ENGLISH' : 'INDONESIA'}
             </button>
             <button className="menu-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
               <i className={mobileOpen ? 'fas fa-times' : 'fas fa-bars'}></i>
@@ -121,7 +121,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
       <div className={`mobile-backdrop ${mobileOpen ? 'open' : ''}`} onClick={closeMobile} />
       <nav className={`mobile-nav ${mobileOpen ? 'open' : ''}`}>
         <div className="mobile-nav-header">
-          <span className="logo-icon">🏝️</span>
+          <span className="logo-icon"><i className="fas fa-umbrella-beach"></i></span>
           <div className="logo-text">
             <span className="logo-main">Lombok</span>
             <span className="logo-sub">Tourism</span>
@@ -188,7 +188,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
 
         <div className="mobile-nav-footer">
           <button className="mobile-lang-btn" onClick={() => { setLang(lang === 'id' ? 'en' : 'id'); closeMobile(); }}>
-            {lang === 'id' ? '🇬🇧 Switch to English' : '🇮🇩 Ganti ke Indonesia'}
+            {lang === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}
           </button>
         </div>
       </nav>

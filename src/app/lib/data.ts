@@ -16,11 +16,11 @@ async function getRdfStore(): Promise<Store> {
 
   // Return cached store jika file tidak berubah
   if (cachedStore && lastModified === currentModified) {
-    console.log('✅ Using cached RDF store');
+    console.log('[OK] Using cached RDF store');
     return cachedStore;
   }
 
-  console.log('🔄 Parsing RDF file...');
+  console.log('[LOAD] Parsing RDF file...');
   const rdfContent = fs.readFileSync(rdfFilePath, 'utf-8');
 
   // Parse RDF/XML ke N3 Store
@@ -47,7 +47,7 @@ async function getRdfStore(): Promise<Store> {
   // Cache store dan timestamp
   cachedStore = store;
   lastModified = currentModified;
-  console.log('✅ RDF store cached');
+  console.log('[OK] RDF store cached');
 
   return store;
 }

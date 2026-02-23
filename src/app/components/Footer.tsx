@@ -12,7 +12,7 @@ export default function Footer({ lang, onNavigate }: FooterProps) {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div className="footer-logo">🏝️ Lombok Paradise</div>
+        <div className="footer-logo"><i className="fas fa-umbrella-beach" style={{ marginRight: 8 }}></i>Lombok Paradise</div>
         <p>
           {lang === 'id'
             ? '© 2026 Lombok Tourism — Mesin Pencari Wisata Berbasis Web Semantik'

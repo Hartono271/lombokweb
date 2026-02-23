@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { dictionary } from '../dictionary';
 import Carousel from './Carousel';
@@ -11,22 +10,22 @@ import { getCategories } from '../lib/categories';
 
 // SWRL Rules untuk smart search
 const swrlRules: any = {
-  holiday: { keywords: ['liburan', 'holiday', 'summer', 'vacation', 'libur', 'rekreasi'], types: ['Marine', 'Island', 'Park', 'Natural'], badge: '✨ Holiday Choice', badgeId: '✨ Pilihan Liburan' },
-  budget: { keywords: ['murah', 'cheap', 'budget', 'hemat', 'gratis', 'free', 'affordable', 'terjangkau'], priceFilter: 'cheap', badge: '💰 Budget Friendly', badgeId: '💰 Hemat Budget' },
-  expensive: { keywords: ['mahal', 'expensive', 'premium', 'luxury', 'mewah', 'eksklusif'], priceFilter: 'expensive', badge: '💎 Premium', badgeId: '💎 Wisata Premium' },
-  family: { keywords: ['keluarga', 'family', 'kids', 'anak', 'children'], types: ['Park', 'Waterfall', 'Bathing', 'Island'], badge: '👨‍👩‍👧‍👦 Family Friendly', badgeId: '👨‍👩‍👧‍👦 Ramah Keluarga' },
-  adventure: { keywords: ['petualangan', 'adventure', 'hiking', 'trekking', 'pendakian', 'extreme'], types: ['Mountain', 'Cave', 'Natural', 'Forrest'], badge: '🧗 Adventure Spot', badgeId: '🧗 Spot Petualangan' },
-  culture: { keywords: ['budaya', 'culture', 'tradisi', 'sasak', 'adat', 'traditional'], types: ['Cultural', 'Village', 'Educational'], badge: '🏛️ Cultural Heritage', badgeId: '🏛️ Warisan Budaya' },
-  religious: { keywords: ['religi', 'religious', 'spiritual', 'ibadah', 'temple', 'mosque', 'masjid', 'pura', 'ziarah'], types: ['Religious', 'Cultural'], badge: '🕌 Religious Tourism', badgeId: '🕌 Wisata Religi' },
-  nature: { keywords: ['alam', 'nature', 'eco', 'green', 'hijau', 'forest', 'hutan', 'natural'], types: ['Natural', 'Forrest', 'Eco', 'Park', 'Waterfall', 'Mountain', 'Lake'], badge: '🌿 Nature Escape', badgeId: '🌿 Wisata Alam' },
-  education: { keywords: ['edukasi', 'education', 'belajar', 'learn', 'museum', 'sejarah', 'history', 'pengetahuan'], types: ['Educational', 'Cultural', 'Agrotourism'], badge: '📚 Educational', badgeId: '📚 Wisata Edukasi' },
-  popular: { keywords: ['populer', 'popular', 'terkenal', 'famous', 'top', 'terbaik', 'best', 'trending'], ratingFilter: 'high', badge: '⭐ Popular', badgeId: '⭐ Populer' },
-  unpopular: { keywords: ['hidden', 'tersembunyi', 'rahasia', 'secret', 'sepi', 'quiet', 'underrated'], ratingFilter: 'low', badge: '🔍 Hidden Gem', badgeId: '🔍 Permata Tersembunyi' },
-  relax: { keywords: ['relax', 'santai', 'spa', 'wellness', 'healing', 'pemandian', 'istirahat'], types: ['Bathing', 'Park', 'Island'], badge: '🧘 Relaxation', badgeId: '🧘 Relaksasi' },
-  photo: { keywords: ['foto', 'photo', 'instagram', 'scenic', 'view', 'pemandangan', 'sunset'], types: ['Marine', 'Mountain', 'Island', 'Valley', 'Savana', 'Waterfall'], badge: '📸 Instagrammable', badgeId: '📸 Spot Foto' },
-  water: { keywords: ['air', 'water', 'swim', 'berenang', 'snorkeling', 'diving', 'surfing', 'laut'], types: ['Marine', 'Island', 'Waterfall', 'Bathing', 'Lake'], badge: '🌊 Water Activities', badgeId: '🌊 Wisata Air' },
-  food: { keywords: ['makanan', 'food', 'kuliner', 'culinary', 'makan', 'eat', 'restaurant', 'kopi'], types: ['Culinary'], badge: '🍜 Culinary Tour', badgeId: '🍜 Wisata Kuliner' },
-  events: { keywords: ['event', 'acara', 'festival', 'perayaan', 'celebration', 'ceremony'], types: ['Events'], badge: '🎉 Events', badgeId: '🎉 Acara' }
+  holiday: { keywords: ['liburan', 'holiday', 'summer', 'vacation', 'libur', 'rekreasi'], types: ['Marine', 'Island', 'Park', 'Natural'], badge: 'Holiday Choice', badgeId: 'Pilihan Liburan', icon: 'fas fa-star' },
+  budget: { keywords: ['murah', 'cheap', 'budget', 'hemat', 'gratis', 'free', 'affordable', 'terjangkau'], priceFilter: 'cheap', badge: 'Budget Friendly', badgeId: 'Hemat Budget', icon: 'fas fa-coins' },
+  expensive: { keywords: ['mahal', 'expensive', 'premium', 'luxury', 'mewah', 'eksklusif'], priceFilter: 'expensive', badge: 'Premium', badgeId: 'Wisata Premium', icon: 'fas fa-gem' },
+  family: { keywords: ['keluarga', 'family', 'kids', 'anak', 'children'], types: ['Park', 'Waterfall', 'Bathing', 'Island'], badge: 'Family Friendly', badgeId: 'Ramah Keluarga', icon: 'fas fa-users' },
+  adventure: { keywords: ['petualangan', 'adventure', 'hiking', 'trekking', 'pendakian', 'extreme'], types: ['Mountain', 'Cave', 'Natural', 'Forrest'], badge: 'Adventure Spot', badgeId: 'Spot Petualangan', icon: 'fas fa-hiking' },
+  culture: { keywords: ['budaya', 'culture', 'tradisi', 'sasak', 'adat', 'traditional'], types: ['Cultural', 'Village', 'Educational'], badge: 'Cultural Heritage', badgeId: 'Warisan Budaya', icon: 'fas fa-landmark' },
+  religious: { keywords: ['religi', 'religious', 'spiritual', 'ibadah', 'temple', 'mosque', 'masjid', 'pura', 'ziarah'], types: ['Religious', 'Cultural'], badge: 'Religious Tourism', badgeId: 'Wisata Religi', icon: 'fas fa-mosque' },
+  nature: { keywords: ['alam', 'nature', 'eco', 'green', 'hijau', 'forest', 'hutan', 'natural'], types: ['Natural', 'Forrest', 'Eco', 'Park', 'Waterfall', 'Mountain', 'Lake'], badge: 'Nature Escape', badgeId: 'Wisata Alam', icon: 'fas fa-leaf' },
+  education: { keywords: ['edukasi', 'education', 'belajar', 'learn', 'museum', 'sejarah', 'history', 'pengetahuan'], types: ['Educational', 'Cultural', 'Agrotourism'], badge: 'Educational', badgeId: 'Wisata Edukasi', icon: 'fas fa-book-open' },
+  popular: { keywords: ['populer', 'popular', 'terkenal', 'famous', 'top', 'terbaik', 'best', 'trending'], ratingFilter: 'high', badge: 'Popular', badgeId: 'Populer', icon: 'fas fa-star' },
+  unpopular: { keywords: ['hidden', 'tersembunyi', 'rahasia', 'secret', 'sepi', 'quiet', 'underrated'], ratingFilter: 'low', badge: 'Hidden Gem', badgeId: 'Permata Tersembunyi', icon: 'fas fa-search' },
+  relax: { keywords: ['relax', 'santai', 'spa', 'wellness', 'healing', 'pemandian', 'istirahat'], types: ['Bathing', 'Park', 'Island'], badge: 'Relaxation', badgeId: 'Relaksasi', icon: 'fas fa-spa' },
+  photo: { keywords: ['foto', 'photo', 'instagram', 'scenic', 'view', 'pemandangan', 'sunset'], types: ['Marine', 'Mountain', 'Island', 'Valley', 'Savana', 'Waterfall'], badge: 'Instagrammable', badgeId: 'Spot Foto', icon: 'fas fa-camera' },
+  water: { keywords: ['air', 'water', 'swim', 'berenang', 'snorkeling', 'diving', 'surfing', 'laut'], types: ['Marine', 'Island', 'Waterfall', 'Bathing', 'Lake'], badge: 'Water Activities', badgeId: 'Wisata Air', icon: 'fas fa-water' },
+  food: { keywords: ['makanan', 'food', 'kuliner', 'culinary', 'makan', 'eat', 'restaurant', 'kopi'], types: ['Culinary'], badge: 'Culinary Tour', badgeId: 'Wisata Kuliner', icon: 'fas fa-utensils' },
+  events: { keywords: ['event', 'acara', 'festival', 'perayaan', 'celebration', 'ceremony'], types: ['Events'], badge: 'Events', badgeId: 'Acara', icon: 'fas fa-calendar-alt' }
 };
 
 // Terjemahan transportasi
@@ -44,7 +43,7 @@ const transportTranslations: any = {
 };
 
 // Reason icons
-const reasonIcons = ['🏝️', '⛰️', '🎭', '🏄', '🌴', '🏘️', '💧', '🍜'];
+const reasonIcons = ['fas fa-umbrella-beach', 'fas fa-mountain', 'fas fa-theater-masks', 'fas fa-water', 'fas fa-tree', 'fas fa-home', 'fas fa-tint', 'fas fa-utensils'];
 
 export default function ClientView({ initialData }: { initialData: any[] }) {
   const [lang, setLang] = useState<'id' | 'en'>('id');
@@ -300,12 +299,10 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                     onClick={() => videoItem && setModalItem(videoItem)}
                   >
                     <div className="hero-card-img">
-                      <Image
+                      <img
                         src="/01.png"
                         alt="Lombok Video"
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        sizes="300px"
+                        style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
                       />
                       <div className="hero-card-play">
                         <i className="fas fa-play-circle"></i>
@@ -340,12 +337,10 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                   <div className="featured-grid">
                     {/* Main Featured Card */}
                     <div className="featured-main" onClick={() => setModalItem(featuredItems[0])}>
-                      <Image
+                      <img
                         src={getImageUrl(featuredItems[0])}
                         alt={lang === 'id' ? featuredItems[0].nameId : featuredItems[0].nameEn}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                        style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
                       />
                       <div className="featured-overlay">
                         <span className="featured-badge">
@@ -363,12 +358,10 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                     {featuredItems.slice(1, 3).map((item: any, i: number) => (
                       <div key={i} className="featured-secondary" onClick={() => setModalItem(item)}>
                         <div className="featured-sec-img">
-                          <Image
+                          <img
                             src={getImageUrl(item)}
                             alt={lang === 'id' ? item.nameId : item.nameEn}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            sizes="(max-width: 768px) 100vw, 33vw"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
                           />
                         </div>
                         <div className="featured-sec-body">
@@ -383,12 +376,10 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                     {featuredItems.slice(3, 5).map((item: any, i: number) => (
                       <div key={i + 2} className="featured-secondary" onClick={() => setModalItem(item)}>
                         <div className="featured-sec-img">
-                          <Image
+                          <img
                             src={getImageUrl(item)}
                             alt={lang === 'id' ? item.nameId : item.nameEn}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            sizes="(max-width: 768px) 100vw, 33vw"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
                           />
                         </div>
                         <div className="featured-sec-body">
@@ -412,12 +403,10 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                     {featuredItems.slice(3, 7).map((item: any, i: number) => (
                       <div key={i} className="more-card" onClick={() => setModalItem(item)}>
                         <div className="more-card-img">
-                          <Image
+                          <img
                             src={getImageUrl(item)}
                             alt={lang === 'id' ? item.nameId : item.nameEn}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            sizes="(max-width: 768px) 50vw, 20vw"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
                           />
                         </div>
                         <h5>{lang === 'id' ? item.nameId : item.nameEn}</h5>
@@ -442,8 +431,79 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                 <div className="info-grid">
                   {t.reasons.map((reason: string, i: number) => (
                     <div key={i} className="info-item">
-                      <span className="info-icon">{reasonIcons[i] || '🌟'}</span>
+                      <span className="info-icon"><i className={reasonIcons[i] || 'fas fa-star'}></i></span>
                       <span>{reason}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ===== Tourism Stats Section ===== */}
+            <section className="stats-section">
+              <div className="section-inner">
+                <h2>{t.tourismInfoTitle}</h2>
+                <div className="stats-grid">
+                  {(t.tourismStats as any[]).map((stat: any, i: number) => (
+                    <div key={i} className="stat-card">
+                      <span className="stat-icon"><i className={stat.icon}></i></span>
+                      <span className="stat-value">{stat.value}</span>
+                      <span className="stat-label">{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ===== Target Audience Section ===== */}
+            <section className="target-section">
+              <div className="section-inner">
+                <h2>{t.targetTitle}</h2>
+                <div className="target-grid">
+                  {(t.targets as any[]).map((target: any, i: number) => (
+                    <div key={i} className="target-card">
+                      <span className="target-icon"><i className={target.icon}></i></span>
+                      <h3>{target.title}</h3>
+                      <p>{target.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ===== Problem & Solution Section ===== */}
+            <section className="problem-section">
+              <div className="section-inner">
+                <h2>{t.problemTitle}</h2>
+                <p className="section-subtitle">{t.problemSubtitle}</p>
+                <div className="problem-grid">
+                  {(t.problems as any[]).map((problem: any, i: number) => (
+                    <div key={i} className="problem-card">
+                      <span className="problem-icon"><i className={problem.icon}></i></span>
+                      <h3>{problem.title}</h3>
+                      <p>{problem.desc}</p>
+                      <span className="problem-solution">{problem.solution}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ===== Community Impact Section ===== */}
+            <section className="impact-section">
+              <div className="section-inner">
+                <h2>{t.impactTitle}</h2>
+                <p className="section-subtitle">{t.impactSubtitle}</p>
+                <div className="impact-grid">
+                  {(t.impacts as any[]).map((impact: any, i: number) => (
+                    <div key={i} className="impact-card">
+                      <div className="impact-icon-wrap">
+                        <span className="impact-icon"><i className={impact.icon}></i></span>
+                      </div>
+                      <div className="impact-content">
+                        <h3>{impact.title}</h3>
+                        <p>{impact.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -560,10 +620,12 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                     const imageUrl = getImageUrl(item);
 
                     let smartBadge = "";
+                    let smartBadgeIcon = "";
                     let smartClass = "";
                     if (filteredData.activeRules.length > 0) {
                       smartClass = "smart-active";
                       smartBadge = lang === 'id' ? filteredData.activeRules[0].badgeId : filteredData.activeRules[0].badge;
+                      smartBadgeIcon = filteredData.activeRules[0].icon || '';
                     }
 
                     let ratingHtml = '';
@@ -577,16 +639,14 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
                     return (
                       <div key={index} className={`dest-card ${smartClass}`}>
                         <div className="dest-card-img">
-                          <Image
+                          <img
                             src={imageUrl}
                             alt={itemData.title}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
                             onError={(e) => e.currentTarget.src = 'https://placehold.co/400x300/B8860B/white?text=Lombok'}
                           />
                           {smartBadge && (
-                            <div className="dest-card-smart-badge">{smartBadge}</div>
+                            <div className="dest-card-smart-badge"><i className={smartBadgeIcon} style={{ marginRight: 6 }}></i>{smartBadge}</div>
                           )}
                         </div>
 

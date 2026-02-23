@@ -23,15 +23,15 @@ export async function POST(request: NextRequest) {
     }
 
     const telegramMessage = `
-🌟 *NEW FEEDBACK - Lombok Tourism*
+** NEW FEEDBACK - Lombok Tourism **
 
-👤 *Dari:* ${name}
-${email ? `📧 *Email:* ${email}` : ''}
+*Dari:* ${name}
+${email ? `*Email:* ${email}` : ''}
 
-💬 *Pesan:*
+*Pesan:*
 ${message}
 
-⏰ ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Makassar' })}
+${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Makassar' })}
     `.trim();
 
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
