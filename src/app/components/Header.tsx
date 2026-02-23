@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface HeaderProps {
@@ -12,6 +12,23 @@ interface HeaderProps {
 }
 
 export default function Header({ lang, setLang, activePage, onNavigate, topBarItems }: HeaderProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  const closeMobile = () => setMobileOpen(false);
+
   return (
     <>
       {/* ===== Top Bar ===== */}
@@ -35,7 +52,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
       <header className="site-header">
         <div className="header-inner">
           {onNavigate ? (
-            <div className="header-logo" onClick={() => onNavigate('welcome')}>
+            <div className="header-logo" onClick={() => { onNavigate('welcome'); closeMobile(); }}>
               <span className="logo-icon">🏝️</span>
               <div className="logo-text">
                 <span className="logo-main">Lombok</span>
@@ -43,7 +60,7 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
               </div>
             </div>
           ) : (
-            <Link href="/" className="header-logo">
+            <Link href="/" className="header-logo" onClick={closeMobile}>
               <span className="logo-icon">🏝️</span>
               <div className="logo-text">
                 <span className="logo-main">Lombok</span>
@@ -93,12 +110,88 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
             <button className="lang-toggle" onClick={() => setLang(lang === 'id' ? 'en' : 'id')}>
               {lang === 'id' ? '🇬🇧 IN ENGLISH' : '🇮🇩 INDONESIA'}
             </button>
-            <button className="menu-toggle">
-              <i className="fas fa-bars"></i>
+            <button className="menu-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
+              <i className={mobileOpen ? 'fas fa-times' : 'fas fa-bars'}></i>
             </button>
           </div>
         </div>
       </header>
+
+      {/* ===== Mobile Navigation Drawer ===== */}
+      <div className={`mobile-backdrop ${mobileOpen ? 'open' : ''}`} onClick={closeMobile} />
+      <nav className={`mobile-nav ${mobileOpen ? 'open' : ''}`}>
+        <div className="mobile-nav-header">
+          <span className="logo-icon">🏝️</span>
+          <div className="logo-text">
+            <span className="logo-main">Lombok</span>
+            <span className="logo-sub">Tourism</span>
+          </div>
+          <button className="mobile-nav-close" onClick={closeMobile}>
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div className="mobile-nav-links">
+          {onNavigate ? (
+            <>
+              <a
+                className={`mobile-nav-link ${activePage === 'home' ? 'active' : ''}`}
+                onClick={() => { onNavigate('welcome'); closeMobile(); }}
+              >
+                <i className="fas fa-home"></i>
+                {lang === 'id' ? 'Beranda' : 'Home'}
+              </a>
+              <a
+                className={`mobile-nav-link ${activePage === 'destinations' ? 'active' : ''}`}
+                onClick={() => { onNavigate('search'); closeMobile(); }}
+              >
+                <i className="fas fa-map-marker-alt"></i>
+                {lang === 'id' ? 'Destinasi' : 'Destinations'}
+              </a>
+            </>
+          ) : (
+            <>
+              <Link href="/" className={`mobile-nav-link ${activePage === 'home' ? 'active' : ''}`} onClick={closeMobile}>
+                <i className="fas fa-home"></i>
+                {lang === 'id' ? 'Beranda' : 'Home'}
+              </Link>
+              <Link href="/" className={`mobile-nav-link ${activePage === 'destinations' ? 'active' : ''}`} onClick={closeMobile}>
+                <i className="fas fa-map-marker-alt"></i>
+                {lang === 'id' ? 'Destinasi' : 'Destinations'}
+              </Link>
+            </>
+          )}
+          <Link href="/feedback" className={`mobile-nav-link ${activePage === 'feedback' ? 'active' : ''}`} onClick={closeMobile}>
+            <i className="fas fa-comment-dots"></i>
+            Feedback
+          </Link>
+        </div>
+
+        {topBarItems && topBarItems.length > 0 && (
+          <div className="mobile-nav-categories">
+            <div className="mobile-nav-section-title">
+              {lang === 'id' ? 'Kategori' : 'Categories'}
+            </div>
+            <div className="mobile-nav-cat-grid">
+              {topBarItems.map((item) => (
+                <a
+                  key={item.key}
+                  className={`mobile-nav-cat ${item.active ? 'active' : ''}`}
+                  onClick={() => { item.onClick?.(); closeMobile(); }}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mobile-nav-footer">
+          <button className="mobile-lang-btn" onClick={() => { setLang(lang === 'id' ? 'en' : 'id'); closeMobile(); }}>
+            {lang === 'id' ? '🇬🇧 Switch to English' : '🇮🇩 Ganti ke Indonesia'}
+          </button>
+        </div>
+      </nav>
     </>
   );
 }
