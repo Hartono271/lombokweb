@@ -3075,7 +3075,7 @@
         <protegetesis:Activity>Hiking, camping, sunrise photography, savanna exploration</protegetesis:Activity>
         <protegetesis:Description>A mountain with a height of 2,700 meters above sea level, part of the Mount Rinjani series.</protegetesis:Description>
         <protegetesis:Facility>Climbing post, simple stall, camping area, clear trekking path</protegetesis:Facility>
-        <protegetesis:Images>https://ak-d.tripcdn.com/images/0102w12000nz8y5jw4E9C_W_750_0_Q70.webp?proc=source%2Ftrip&proc=source%2Ftrip</protegetesis:Images>
+        <protegetesis:Images>https://ak-d.tripcdn.com/images/0102w12000nz8y5jw4E9C_W_750_0_Q70.webp?proc=source%2Ftrip&amp;proc=source%2Ftrip</protegetesis:Images>
         <protegetesis:OpeningHours>24 jam</protegetesis:OpeningHours>
         <protegetesis:Price>10.000</protegetesis:Price>
         <protegetesis:Ratings>4.4</protegetesis:Ratings>
