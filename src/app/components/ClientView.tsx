@@ -276,8 +276,8 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
               </div>
               <div className="hero-overlay">
                 <div className="hero-left">
-                  <p className="hero-label">
-                    {lang === 'id' ? 'Selamat datang di Laman Resmi' : 'Welcome to the Official Page'}
+                  <p className="hero-label" style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', textShadow: '0 2px 16px rgba(0,0,0,0.5)', background: 'linear-gradient(90deg, #ffd700, #fff, #ffd700)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '0.5rem' }}>
+                    {lang === 'id' ? '🌴 Selamat Datang di Laman Resmi 🌴' : '🌴 Welcome to the Official Page 🌴'}
                   </p>
                   <h1 className="hero-title">
                     <span className="hero-title-line">
