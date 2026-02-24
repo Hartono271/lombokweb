@@ -3,15 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+interface SectionNavItem {
+  id: string;
+  label: string;
+  icon: string;
+}
+
 interface HeaderProps {
   lang: 'id' | 'en';
   setLang: (lang: 'id' | 'en') => void;
   activePage: 'home' | 'destinations' | 'feedback';
   onNavigate?: (screen: 'welcome' | 'search') => void;
   topBarItems?: { key: string; label: string; active?: boolean; onClick?: () => void }[];
+  sectionNavItems?: SectionNavItem[];
 }
 
-export default function Header({ lang, setLang, activePage, onNavigate, topBarItems }: HeaderProps) {
+export default function Header({ lang, setLang, activePage, onNavigate, topBarItems, sectionNavItems }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -28,6 +35,19 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
   }, []);
 
   const closeMobile = () => setMobileOpen(false);
+
+  const scrollToSection = (id: string) => {
+    closeMobile();
+    if (onNavigate) onNavigate('welcome');
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        const headerOffset = 120;
+        const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }, 100);
+  };
 
   return (
     <>
@@ -78,6 +98,21 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
                 >
                   {lang === 'id' ? 'BERANDA' : 'HOME'}
                 </a>
+                {sectionNavItems && sectionNavItems.length > 0 && (
+                  <div className="nav-dropdown">
+                    <a className="nav-dropdown-trigger">
+                      {lang === 'id' ? 'TENTANG' : 'ABOUT'}{' '}
+                      <i className="fas fa-chevron-down" style={{ fontSize: '0.65rem', marginLeft: 4 }}></i>
+                    </a>
+                    <div className="nav-dropdown-menu">
+                      {sectionNavItems.map((item) => (
+                        <a key={item.id} onClick={() => scrollToSection(item.id)}>
+                          <i className={item.icon}></i> {item.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <a
                   className={activePage === 'destinations' ? 'active' : ''}
                   onClick={() => onNavigate('search')}
@@ -166,6 +201,25 @@ export default function Header({ lang, setLang, activePage, onNavigate, topBarIt
             Feedback
           </Link>
         </div>
+
+        {sectionNavItems && sectionNavItems.length > 0 && (
+          <div className="mobile-nav-categories">
+            <div className="mobile-nav-section-title">
+              {lang === 'id' ? 'Navigasi Halaman' : 'Page Navigation'}
+            </div>
+            <div className="mobile-nav-cat-grid">
+              {sectionNavItems.map((item) => (
+                <a
+                  key={item.id}
+                  className="mobile-nav-cat"
+                  onClick={() => scrollToSection(item.id)}
+                >
+                  <i className={item.icon} style={{ marginRight: 6 }}></i>{item.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {topBarItems && topBarItems.length > 0 && (
           <div className="mobile-nav-categories">

@@ -256,6 +256,13 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
           active: activeCategories.includes(cat.key),
           onClick: () => { setCategory(cat.key); setScreen('search'); },
         }))}
+        sectionNavItems={[
+          { id: 'why-lombok', label: lang === 'id' ? 'Kenapa Lombok' : 'Why Lombok', icon: 'fas fa-question-circle' },
+          { id: 'tourism-stats', label: lang === 'id' ? 'Dalam Angka' : 'In Numbers', icon: 'fas fa-chart-bar' },
+          { id: 'target-audience', label: lang === 'id' ? 'Untuk Siapa' : 'For Whom', icon: 'fas fa-users' },
+          { id: 'problem-solution', label: lang === 'id' ? 'Masalah' : 'Problems', icon: 'fas fa-puzzle-piece' },
+          { id: 'community-impact', label: lang === 'id' ? 'Dampak' : 'Impact', icon: 'fas fa-hand-holding-heart' },
+        ]}
       />
 
       {/* ===== Main Content ===== */}
@@ -425,7 +432,7 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
             )}
 
             {/* ===== Why Lombok Section ===== */}
-            <section className="info-section">
+            <section id="why-lombok" className="info-section">
               <div className="section-inner">
                 <h2>{t.why}</h2>
                 <div className="info-grid">
@@ -440,7 +447,7 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
             </section>
 
             {/* ===== Tourism Stats Section ===== */}
-            <section className="stats-section">
+            <section id="tourism-stats" className="stats-section">
               <div className="section-inner">
                 <h2>{t.tourismInfoTitle}</h2>
                 <div className="stats-grid">
@@ -456,7 +463,7 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
             </section>
 
             {/* ===== Target Audience Section ===== */}
-            <section className="target-section">
+            <section id="target-audience" className="target-section">
               <div className="section-inner">
                 <h2>{t.targetTitle}</h2>
                 <div className="target-grid">
@@ -472,7 +479,7 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
             </section>
 
             {/* ===== Problem & Solution Section ===== */}
-            <section className="problem-section">
+            <section id="problem-solution" className="problem-section">
               <div className="section-inner">
                 <h2>{t.problemTitle}</h2>
                 <p className="section-subtitle">{t.problemSubtitle}</p>
@@ -490,7 +497,7 @@ export default function ClientView({ initialData }: { initialData: any[] }) {
             </section>
 
             {/* ===== Community Impact Section ===== */}
-            <section className="impact-section">
+            <section id="community-impact" className="impact-section">
               <div className="section-inner">
                 <h2>{t.impactTitle}</h2>
                 <p className="section-subtitle">{t.impactSubtitle}</p>
